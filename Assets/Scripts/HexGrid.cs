@@ -107,7 +107,25 @@ public class HexGrid : MonoBehaviour {
 
         cell.uiRect = label.rectTransform;
 
-        cell.Elevation = 0;
+        // Elevation perlin noise stuff
+        float scale = 0.003f;
+        float height = Mathf.PerlinNoise(position.x * scale, position.z * scale);
+
+        cell.Elevation = (int)(height * 10) - 1;
+
+        if (cell.Elevation <= 2) {
+            cell.Color = Color.blue * height * 3f;
+        }
+        else if(cell.Elevation <= 3) {
+            cell.Color = Color.yellow * height * 2f;
+        }
+        else if(cell.Elevation <= 5) {
+            cell.Color = Color.green * height * 1.2f;
+        } else {
+            cell.Color = Color.white * height * .95f;
+        }
+
+        //cell.Elevation = 0;
 
         AddCellToChunk(x, z, cell);
     }
