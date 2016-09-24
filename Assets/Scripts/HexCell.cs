@@ -62,7 +62,7 @@ public class HexCell : MonoBehaviour {
     bool hasIncomingRiver, hasOutgoingRiver;
     HexDirection incomingRiver, outgoingRiver;
 
-    public bool HexIncomingRiver {
+    public bool HasIncomingRiver {
         get {
             return hasIncomingRiver;
         }
@@ -101,6 +101,12 @@ public class HexCell : MonoBehaviour {
     public float StreamBedY {
         get {
             return (elevation + HexMetrics.streamBedElevationOffset) * HexMetrics.elevationStep;
+        }
+    }
+
+    public float RiverSurfaceY {
+        get {
+            return (elevation + HexMetrics.riverSurfaceElevationOffset) * HexMetrics.elevationStep;
         }
     }
 
