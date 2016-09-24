@@ -16,6 +16,12 @@ public class HexMapEditor : MonoBehaviour {
 
     int brushSize;
 
+    enum OptionalToggle {
+        Ignore, Yes, No
+    }
+
+    OptionalToggle riverMode;
+
     void Awake() {
         //SelectColor(0);
     }
@@ -84,5 +90,9 @@ public class HexMapEditor : MonoBehaviour {
 
     public void ShowUI(bool visible) {
         hexGrid.ShowUI(visible);
+    }
+
+    public void SetRiverMode(int mode) {
+        riverMode = (OptionalToggle)mode;
     }
 }
