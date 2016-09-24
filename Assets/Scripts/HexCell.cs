@@ -46,6 +46,12 @@ public class HexCell : MonoBehaviour {
                 RemoveOutgoingRiver();
             }
 
+            for (int i = 0; i < roads.Length; i++) {
+                if(roads[i] && GetElevationDifference((HexDirection)i) > 1) {
+                    SetRoad(i, false);
+                }
+            }
+
             Refresh();
         }
     }
@@ -110,6 +116,50 @@ public class HexCell : MonoBehaviour {
         }
     }
 
+    [SerializeField]
+    bool[] roads;
+
+    public bool HasRoad {
+        get {
+            for (int i = 0; i < roads.Length; i++) {
+                if (roads[i])
+                    return true;
+            }
+
+            return false;
+        }
+    }
+
+    public bool HasRoadThroughEdge(HexDirection direction) {
+        return roads[(int)direction];
+    }
+
+    public void AddRoad(HexDirection direction) {
+        if (!roads[(int)direction] && !HasRiverThroughEdge(direction) && GetElevationDifference(direction) <= 1) {
+            SetRoad((int)direction, true);
+        }
+    }
+
+    public void RemoveRoads() {
+        for (int i = 0; i < neighbours.Length; i++) {
+            if (roads[i]) {
+                SetRoad(i, false);
+            }
+        }
+    }
+
+    private void SetRoad(int index, bool state) {
+        roads[index] = state;
+        neighbours[index].roads[(int)((HexDirection)index).Opposite()] = state;
+        neighbours[index].Refresh(true);
+        Refresh(true);
+    }
+
+    public int GetElevationDifference(HexDirection direction) {
+        int difference = elevation - GetNeighbour(direction).elevation;
+        return difference >= 0 ? difference : -difference;
+    }
+
     public bool HasRiverThroughEdge(HexDirection direction) {
         return hasIncomingRiver && incomingRiver == direction || hasOutgoingRiver && outgoingRiver == direction;
     }
@@ -160,12 +210,12 @@ public class HexCell : MonoBehaviour {
 
         hasOutgoingRiver = true;
         outgoingRiver = direction;
-        Refresh(true);
 
         neighbour.RemoveIncomingRiver();
         neighbour.hasIncomingRiver = true;
         neighbour.incomingRiver = direction.Opposite();
-        neighbour.Refresh(true);
+
+        SetRoad((int)direction, false);
     }
 
     public RectTransform uiRect;
