@@ -22,6 +22,10 @@ public class HexMapEditor : MonoBehaviour {
 
     OptionalToggle riverMode;
 
+    bool isDrag;
+    HexDirection dragDirection;
+    HexCell previousCell;
+
     void Awake() {
         //SelectColor(0);
     }
@@ -30,14 +34,41 @@ public class HexMapEditor : MonoBehaviour {
         if (Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject()) {
             HandleInput();
         }
+        else {
+            previousCell = null;
+        }
     }
 
     void HandleInput() {
         Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         if (Physics.Raycast(inputRay, out hit)) {
-            EditCells(hexGrid.GetCell(hit.point));
+            HexCell currentCell = hexGrid.GetCell(hit.point);
+
+            if(previousCell && currentCell != previousCell) {
+                ValidateDrag(currentCell);
+            }
+            else {
+                isDrag = false;
+            }
+
+            EditCells(currentCell);
+            previousCell = currentCell;
         }
+        else {
+            previousCell = null;
+        }
+    }
+
+    void ValidateDrag(HexCell currentCell) {
+        for(dragDirection = HexDirection.NE; dragDirection <= HexDirection.NW; dragDirection++) {
+            if(previousCell.GetNeighbour(dragDirection) == currentCell) {
+                isDrag = true;
+                return;
+            }
+        }
+
+        isDrag = false;
     }
 
     public void SelectColor(int index) {
@@ -72,6 +103,13 @@ public class HexMapEditor : MonoBehaviour {
 
             if (applyElevation) {
                 cell.Elevation = activeElevation;
+            }
+
+            if(riverMode == OptionalToggle.No) {
+                cell.RemoveRiver();
+            }
+            else if(isDrag && riverMode == OptionalToggle.Yes) {
+                previousCell.SetOutgoingRiver(dragDirection);
             }
         }
     }
