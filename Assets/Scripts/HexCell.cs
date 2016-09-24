@@ -130,6 +130,12 @@ public class HexCell : MonoBehaviour {
         }
     }
 
+    public HexDirection RiverBeginOrEndDirection {
+        get {
+            return hasIncomingRiver ? incomingRiver : outgoingRiver;
+        }
+    }
+
     public bool HasRoadThroughEdge(HexDirection direction) {
         return roads[(int)direction];
     }
