@@ -98,6 +98,12 @@ public class HexCell : MonoBehaviour {
         }
     }
 
+    public float StreamBedY {
+        get {
+            return (elevation + HexMetrics.streamBedElevationOffset) * HexMetrics.elevationStep;
+        }
+    }
+
     public bool HasRiverThroughEdge(HexDirection direction) {
         return hasIncomingRiver && incomingRiver == direction || hasOutgoingRiver && outgoingRiver == direction;
     }
